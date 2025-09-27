@@ -1,4 +1,4 @@
-from Py.PACKAGE.PyAcessModifier.PyAcessModifier import publicfrom Py.PACKAGE.PyAcessModifier.PyAcessModifier import private
+
 
 # Python Access Modifiers Library
 
