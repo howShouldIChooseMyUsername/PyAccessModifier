@@ -21,7 +21,7 @@ def _get_caller_file():
 class Private:
     def __init__(self, value):
         self._value = value
-        self._owner_class = None  # 클래스에서 세팅
+        self._owner_class = None
 
     def __set_name__(self, owner, name):
         self._owner_class = owner
@@ -30,7 +30,7 @@ class Private:
         _, caller_cls = _get_caller_info()
         if caller_cls is not instance.__class__:
             raise PermissionError(f"Private variable cannot be accessed from outside class '{self._owner_class.__name__}'")
-        return self._value
+        return self._value  # 실제 값 반환
 
     def __set__(self, instance, value):
         _, caller_cls = _get_caller_info()
@@ -186,8 +186,10 @@ class PrivateInit:
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        # 인스턴스 생성 시 자동 실행
-        self.func(instance)
+        # 인스턴스 최초 접근 시 자동 실행
+        if not hasattr(instance, "_privateinit_run"):
+            self.func(instance)
+            instance._privateinit_run = True
         return lambda *args, **kwargs: self.func(instance, *args, **kwargs)
 
 
