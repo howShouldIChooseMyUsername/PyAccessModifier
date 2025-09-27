@@ -4,8 +4,25 @@
 
 This library provides **access control mechanisms** for Python classes, including `Private`, `Protected`, `Internal`, and `Public` variables and methods. Python does not enforce strict access modifiers like Java or C++, but this library uses **descriptors and decorators** to simulate them.
 
+## How to install
+```commandline
+pip install PyAccessModifier
+```
+or
+```commandline
+pip install git+https://github.com/howShouldIChooseMyUsername/PyAccessModifier.git
+```
+
 ---
 
+## Setup
+```python
+from PyAcessModifier import * # Recommended
+# or
+import PyAcessModifier
+```
+
+---
 ## Variable Descriptors
 
 ### 1. `Private`
