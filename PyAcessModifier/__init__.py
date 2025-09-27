@@ -6,10 +6,11 @@ from .modifier import (
     private,
     protected,
     internal,
-    public
+    public,
+    privateinit
 )
 
 __all__ = [
     "Private", "Protected", "Internal", "Public",
-    "private", "protected", "internal", "public"
+    "private", "protected", "internal", "public", "privateinit"
 ]
