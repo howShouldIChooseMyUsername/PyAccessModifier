@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyAccessModifier"             # PyPI에 올라갈 이름
-version = "0.3.5"
+version = "0.3.6"
 description = "Python Kotlin Acess Modifier"
 readme = "README.md"
 license = {text = "MIT"}
