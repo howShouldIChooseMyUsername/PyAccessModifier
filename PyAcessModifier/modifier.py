@@ -19,24 +19,28 @@ def _get_caller_file():
 # VARIABLE DESCRIPTORS
 # -------------------
 class Private:
-    def __init__(self, value):
-        self._value = value
+    def __init__(self, default=None):
+        self._default = default
         self._owner_class = None
+        self._values = {}  # 인스턴스별 값 저장
 
     def __set_name__(self, owner, name):
         self._owner_class = owner
+        self._name = name
 
     def __get__(self, instance, owner):
+        if instance is None:
+            return self
         _, caller_cls = _get_caller_info()
         if caller_cls is not instance.__class__:
             raise PermissionError(f"Private variable cannot be accessed from outside class '{self._owner_class.__name__}'")
-        return self._value  # 실제 값 반환
+        return self._values.get(instance, self._default)
 
     def __set__(self, instance, value):
         _, caller_cls = _get_caller_info()
         if caller_cls is not instance.__class__:
             raise PermissionError(f"Private variable cannot be modified from outside class '{self._owner_class.__name__}'")
-        self._value = value
+        self._values[instance] = value
 
 class Protected:
     def __init__(self, value):
@@ -191,7 +195,6 @@ class PrivateInit:
             self.func(instance)
             instance._privateinit_run = True
         return lambda *args, **kwargs: self.func(instance, *args, **kwargs)
-
 
 def privateinit(func):
     return PrivateInit(func)
