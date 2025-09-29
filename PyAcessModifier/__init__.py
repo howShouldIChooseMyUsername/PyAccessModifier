@@ -7,10 +7,12 @@ from .modifier import (
     protected,
     internal,
     public,
-    privateinit
+    privateinit,
+    AutoPrivateInit,
+    API
 )
-
 __all__ = [
     "Private", "Protected", "Internal", "Public",
-    "private", "protected", "internal", "public", "privateinit"
+    "private", "protected", "internal", "public", "privateinit",
+    "AutoPrivateInit", "API"
 ]

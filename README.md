@@ -1,4 +1,4 @@
-
+from PyAcessModifier import AutoPrivateInit
 
 # Python Access Modifiers Library
 
@@ -29,8 +29,13 @@ import PyAcessModifier
 - **Purpose:** Restrict access to the variable only within the defining class.
 - **Example:**
 ```python
+@API
 class MyClass:
-    my_private = Private(42)
+    @privateinit
+    def init(self):
+        self._privateValue = Private(40)
+obj = MyClass()
+print(obj.my_private)  # PermissionError
 ```
 - **Behavior:** 
   - Reading or writing from outside the class raises `PermissionError`.
@@ -38,6 +43,40 @@ class MyClass:
 
 ---
 
+### 1.1. `Private` (Class-level)
+- **Purpose:** Restrict access to the class-level variable only within the defining class.
+- **Example:**
+```python
+from PyAcessModifier import Private, public
+
+class MyClass:
+    # Class-level private variable
+    class_private = Private(42)
+
+    @public
+    def show_private(self):
+        print("Internal access:", self.class_private)
+
+    @public
+    def change_private(self, value):
+        self.class_private = value
+
+obj = MyClass()
+
+# Access via class methods (allowed)
+obj.show_private()          # Internal access: 42
+obj.change_private(99)
+obj.show_private()          # Internal access: 99
+
+# Direct external access (raises PermissionError)
+print(obj.class_private)    # PermissionError
+obj.class_private = 123     # PermissionError
+```
+- **Behavior:** 
+  - Reading or writing from outside the class raises `PermissionError`.
+  - Accessing or modifying the variable inside the class methods works as expected.
+
+---
 ### 2. `Protected`
 - **Purpose:** Allow access only from the defining class and its subclasses.
 - **Example:**
@@ -138,7 +177,22 @@ class MyClass:
 
 ---
 
-### 5. `@privateinit`
+### 5. `@AutoPrivateInit`
+- **Purpose:** Required when using `@privateinit`; ensures instance-level private variables are properly initialized.
+- **Example:**
+```python
+@AutoPrivateInit # or @API
+class MyClass:
+    @privateinit
+    def private_init(self):
+        self._private_value = Private(10)
+```
+- **Behavior:** 
+  - Automatically runs all methods marked with `@privateinit` after __init__.
+  - Can be called from anywhere, but the decorator itself must be applied to the class whenever `@privateinit` is used.
+---
+
+### 5.1. `@privateinit`
 - **Purpose:** Initialize private variables separately from `__init__()`; runs automatically on instance creation.
 - **Example:**
 ```Python
@@ -267,6 +321,7 @@ class PublicClass :
         print("This is a public class!")
 ```
 **Notes:**
+- Version 0.4.0
 - Python does not natively support strict access control.
 - This library leverages **descriptors** for variables and **decorators** for methods.
 - Use with caution, as it relies on **call stack inspection** (`inspect`) and may not cover all edge cases.
