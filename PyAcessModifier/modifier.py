@@ -18,32 +18,39 @@ def _get_main_path():
 # -------------------
 # PRIVATE DESCRIPTOR
 # -------------------
+
 class Private:
     def __init__(self, value):
         self._value = value
         self._owner_class = None
-        self._name = None
 
     def __set_name__(self, owner, name):
         self._owner_class = owner
         self._name = name
 
     def __get__(self, instance, owner):
+        # instance가 없으면 클래스 단 접근 → 막기
         if instance is None:
-            return self._value  # 클래스 단 접근 시 원래 값 반환
-        # 인스턴스 단 접근: instance.__dict__에 값 없으면 초기값 설정
-        if self._name not in instance.__dict__:
-            instance.__dict__[self._name] = self._value
-        # 외부 접근 차단
-        caller_self = _get_caller_instance()
-        if caller_self is not instance and type(caller_self) is not type(instance):
-            raise PermissionError(f"Private variable '{self._name}' cannot be accessed from outside class '{self._owner_class.__name__}'")
-        return instance.__dict__[self._name]
+            raise PermissionError(
+                f"Private class variable '{self._name}' cannot be accessed directly"
+            )
+
+        # 호출자 검사
+        caller_self = inspect.currentframe().f_back.f_locals.get('self', None)
+        if caller_self is not instance:
+            # 외부에서 인스턴스를 통해 접근하면 막기
+            raise PermissionError(
+                f"Private variable '{self._name}' cannot be accessed from outside instance methods"
+            )
+
+        return instance.__dict__.get(self._name, self._value)
 
     def __set__(self, instance, value):
-        caller_self = _get_caller_instance()
-        if caller_self is not instance and type(caller_self) is not type(instance):
-            raise PermissionError(f"Private variable '{self._name}' cannot be modified from outside class '{self._owner_class.__name__}'")
+        caller_self = inspect.currentframe().f_back.f_locals.get('self', None)
+        if caller_self is not instance:
+            raise PermissionError(
+                f"Private variable '{self._name}' cannot be modified from outside instance methods"
+            )
         instance.__dict__[self._name] = value
 
 # -------------------
@@ -166,6 +173,77 @@ def protected(obj):
             if caller is not None and isinstance(caller, type(self)):
                 return obj(self, *args, **kwargs)
             raise PermissionError(f"Protected method '{obj.__name__}' cannot be accessed from outside class or subclasses")
+        return wrapper
+
+def internal(obj):
+    """
+    Internal decorator for both methods and classes.
+    - For methods: restrict call to same folder/module.
+    - For classes: restrict instantiation to same folder/module.
+    """
+    if inspect.isclass(obj):
+        # ----------------------
+        # Class-level Internal
+        # ----------------------
+        cls = obj
+        orig_init = cls.__init__
+
+        @wraps(orig_init)
+        def new_init(self, *args, **kwargs):
+            # 호출한 파일 경로
+            frame = inspect.currentframe()
+            try:
+                caller_frame = frame.f_back
+                mod = inspect.getmodule(caller_frame)
+                caller_dir = None
+                if mod is not None and hasattr(mod, "__file__"):
+                    caller_dir = os.path.dirname(os.path.abspath(mod.__file__))
+
+                # 클래스 정의 파일 경로
+                class_file = os.path.abspath(sys.modules[cls.__module__].__file__)
+                class_dir = os.path.dirname(class_file)
+
+                if caller_dir != class_dir:
+                    raise PermissionError(
+                        f"Cannot instantiate class '{cls.__name__}' from outside its folder"
+                    )
+            finally:
+                del frame
+
+            orig_init(self, *args, **kwargs)
+
+        cls.__init__ = new_init
+        return cls
+
+    else:
+        # ----------------------
+        # Method-level Internal
+        # ----------------------
+        func = obj
+
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            frame = inspect.currentframe()
+            try:
+                caller_frame = frame.f_back
+                mod = inspect.getmodule(caller_frame)
+                caller_dir = None
+                if mod is not None and hasattr(mod, "__file__"):
+                    caller_dir = os.path.dirname(os.path.abspath(mod.__file__))
+
+                # 메서드 정의 파일 경로
+                method_file = os.path.abspath(sys.modules[type(self).__module__].__file__)
+                method_dir = os.path.dirname(method_file)
+
+                if caller_dir != method_dir:
+                    raise PermissionError(
+                        f"Cannot call method '{func.__name__}' from outside its folder"
+                    )
+            finally:
+                del frame
+
+            return func(self, *args, **kwargs)
+
         return wrapper
 
 def public(func):

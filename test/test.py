@@ -1,27 +1,18 @@
-from PyAcessModifier import Private, privateinit, API
+from PyAcessModifier import *
+from internal_test import *
+from internal_otherfolder.internal_test2 import *
+@AutoPrivateInit
+class Test :
+    class_private = Private(10)
 
-@API
-class MyClass:
-    @privateinit
-    def init_private(self):
-        self.Secret = Private(123)  # 인스턴스 단 Private
-
-    # 게터 구현
-    @property
-    def secret(self):
-        # Private 객체에서 바로 값 꺼내기
-        return self.Secret.__get__(self, type(self))
-
-    @secret.setter
-    def secret(self, value):
-        # Private 객체에 값 설정
-        self.Secret.__set__(self, value)
+    @public
+    def show_private(self):
+        return self.class_private
 
 
-if __name__ == "__main__":
-    obj = MyClass()
-    print("게터로 접근:", obj.secret)   # 123
+obj = Test()
+print(obj.show_private())
 
-    obj.secret = 999
-    # obj.Secret = 999
-    print("값 변경 후:", obj.secret)    # 999
+obj2 = Test2()
+obj3 = Test3()
+obj3.test()

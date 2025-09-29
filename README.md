@@ -1,5 +1,4 @@
 
-
 # Python Access Modifiers Library
 
 This library provides **access control mechanisms** for Python classes, including `Private`, `Protected`, `Internal`, and `Public` variables and methods. Python does not enforce strict access modifiers like Java or C++, but this library uses **descriptors and decorators** to simulate them.
@@ -321,8 +320,9 @@ class PublicClass :
         print("This is a public class!")
 ```
 **Notes:**
-- Version 0.4.0
+- Version 0.4.1
 - Python does not natively support strict access control.
 - This library leverages **descriptors** for variables and **decorators** for methods.
 - Use with caution, as it relies on **call stack inspection** (`inspect`) and may not cover all edge cases.
 - Any class, method, or variable not explicitly marked with an access modifier is considered **public** by default.
+- Always place class-level access control decorators at the top, above other decorators.
