@@ -15,10 +15,11 @@ pip install git+https://github.com/howShouldIChooseMyUsername/PyAccessModifier.g
 ---
 
 ## Setup
+
 ```python
-from PyAcessModifier import * # Recommended
+from PyAccessModifier import *  # Recommended
 # or
-import PyAcessModifier
+import PyAccessModifier
 ```
 
 ---
@@ -45,8 +46,10 @@ print(obj.my_private)  # PermissionError
 ### 1.1. `Private` (Class-level)
 - **Purpose:** Restrict access to the class-level variable only within the defining class.
 - **Example:**
+
 ```python
-from PyAcessModifier import Private, public
+from PyAccessModifier import Private, public
+
 
 class MyClass:
     # Class-level private variable
@@ -60,16 +63,17 @@ class MyClass:
     def change_private(self, value):
         self.class_private = value
 
+
 obj = MyClass()
 
 # Access via class methods (allowed)
-obj.show_private()          # Internal access: 42
+obj.show_private()  # Internal access: 42
 obj.change_private(99)
-obj.show_private()          # Internal access: 99
+obj.show_private()  # Internal access: 99
 
 # Direct external access (raises PermissionError)
-print(obj.class_private)    # PermissionError
-obj.class_private = 123     # PermissionError
+print(obj.class_private)  # PermissionError
+obj.class_private = 123  # PermissionError
 ```
 - **Behavior:** 
   - Reading or writing from outside the class raises `PermissionError`.
@@ -320,7 +324,7 @@ class PublicClass :
         print("This is a public class!")
 ```
 **Notes:**
-- Version 0.4.1
+- Version 0.4.2
 - Python does not natively support strict access control.
 - This library leverages **descriptors** for variables and **decorators** for methods.
 - Use with caution, as it relies on **call stack inspection** (`inspect`) and may not cover all edge cases.

@@ -1,4 +1,4 @@
-from PyAcessModifier import *
+from PyAccessModifier import *
 
 @private
 class Test2:
