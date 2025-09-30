@@ -131,9 +131,11 @@ class Public:
     def __set__(self, instance, value):
         instance.__dict__[self._name] = value
 
+
 # -------------------
 # METHOD DECORATORS
 # -------------------
+
 def private(obj):
     if inspect.isclass(obj):
         orig_init = obj.__init__
