@@ -1,6 +1,6 @@
 
 # Python Access Modifiers Library
-
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/pyaccessmodifier?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/pyaccessmodifier)<br>
 This library provides **access control mechanisms** for Python classes, including `Private`, `Protected`, `Internal`, and `Public` variables and methods. Python does not enforce strict access modifiers like Java or C++, but this library uses **descriptors and decorators** to simulate them.
 
 ## How to install
