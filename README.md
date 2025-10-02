@@ -325,7 +325,7 @@ class PublicClass :
         print("This is a public class!")
 ```
 **Notes:**
-- Version 0.4.2
+- Version 0.4.3
 - Python does not natively support strict access control.
 - This library leverages **descriptors** for variables and **decorators** for methods.
 - Use with caution, as it relies on **call stack inspection** (`inspect`) and may not cover all edge cases.
