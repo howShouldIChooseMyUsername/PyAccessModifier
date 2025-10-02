@@ -199,6 +199,7 @@ class MyClass:
 - **Purpose:** Initialize private variables separately from `__init__()`; runs automatically on instance creation.
 - **Example:**
 ```Python
+@AutoPrivateInit
 class Myclass:
     privateVariable = Private(1)
     def __init__(self):
